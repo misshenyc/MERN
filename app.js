@@ -6,6 +6,7 @@ const users = require('./routes/api/users');
 const tweets = require('./routes/api/tweets');
 const passport = require('passport');
 const app = express();
+const path = require('path');
 
 mongoose
     .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -23,6 +24,13 @@ app.use('/api/tweets', tweets)
 
 app.use(passport.initialize());
 require('./config/passport')(passport);
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('frontend/build'));
+    app.get('/', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+    })
+}
 
 
 
